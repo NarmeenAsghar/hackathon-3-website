@@ -1,204 +1,213 @@
 "use client";
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import { useParams } from "next/navigation"; 
+import dynamic from "next/dynamic"; 
+import { client } from "@/sanity/lib/client";
 
-const products = [
-  {
-    id: 1,
-    name: "Trenton modular sofa_3",
-    price: "Rs. 25,000.00",
-    image: "/Mask group.png",
-    description: "A comfortable modular sofa for modern living spaces.",
-  },
-  {
-    id: 2,
-    name: "Granite dining table with dining chair",
-    price: "Rs. 25,000.00",
-    image: "/Granite dining table with dining chair 1.png",
-    description: "Stylish granite dining table with matching chairs.",
-  },
-  {
-    id: 3,
-    name: "Outdoor bar table and stool",
-    price: "Rs. 25,000.00",
-    image: "/Outdoor bar table and stool 1.png",
-    description: "Durable bar table set for outdoor spaces.",
-  },
-  {
-    id: 4,
-    name: "Plain console with teak mirror",
-    price: "Rs. 25,000.00",
-    image: "/Plain console with teak mirror 1.png",
-    description: "Elegant console with a teak mirror.",
-  },
-  {
-    id: 5,
-    name: "Grain coffee table",
-    price: "Rs. 15,000.00",
-    image: "/Grain coffee table 1.png",
-    description: "Minimalistic coffee table for modern living rooms.",
-  },
-  {
-    id: 6,
-    name: "Kent coffee table",
-    price: "Rs. 225,000.00",
-    image: "/Kent coffee table 1.png",
-    description: "Sleek and stylish coffee table for your home.",
-  },
-  {
-    id: 7,
-    name: "Round coffee table_color 2",
-    price: "Rs. 251,000.00",
-    image: "/Round coffee table_color 2 1.png",
-    description: "Elegant round coffee table for your living space.",
-  },
-  {
-    id: 8,
-    name: "Reclaimed teak coffee table",
-    price: "Rs. 25,200.00",
-    image: "/Reclaimed teak coffee table 1.png",
-    description: "Eco-friendly coffee table made of reclaimed teak.",
-  },
-  {
-    id: 9,
-    name: "Plain console_",
-    price: "Rs. 258,200.00",
-    image: "/Plain console_ 1.png",
-    description: "Modern console for any space.",
-  },
-  {
-    id: 10,
-    name: "Reclaimed teak Sideboardr",
-    price: "Rs. 20,000.00",
-    image: "/Reclaimed teak Sideboard 1.png",
-    description: "Sideboard made of reclaimed teak wood.",
-  },
-  {
-    id: 11,
-    name: "SJP_0825",
-    price: "Rs. 200,000.00",
-    image: "/SJP_0825  1.png",
-    description: "A luxurious piece for a sophisticated home.",
-  },
-  {
-    id: 12,
-    name: "Bella chair and table",
-    price: "Rs. 100,000.00",
-    image: "/Bella chair and table 1.png",
-    description: "A chic chair and table set.",
-  },
-  {
-    id: 13,
-    name: "Granite square side table",
-    price: "Rs. 258,800.00",
-    image: "/Granite square side table 1.png",
-    description: "A durable granite side table.",
-  },
-  {
-    id: 14,
-    name: "Asgaard sofa",
-    price: "Rs. 250,000.00",
-    image: "/Asgaard sofa 1 (1).png",
-    description: "Luxurious sofa for your living room.",
-  },
-  {
-    id: 15,
-    name: "Maya sofa three seater",
-    price: "Rs. 115,000.00",
-    image: "/Maya sofa three seater 1.png",
-    description: "Comfortable three-seater sofa.",
-  },
-  {
-    id: 16,
-    name: "Outdoor sofa set",
-    price: "Rs. 244,000.00",
-    image: "/Outdoor sofa set 1.png",
-    description: "Stylish outdoor sofa set.",
-  },
-];
+const Header = dynamic(() => import("@/components/Header"));
+const Footer = dynamic(() => import("@/components/Footer"));
+
+interface Product {
+  _id: string;
+  name: string;
+  price: string;
+  image: {
+    asset: {
+      url: string;
+    };
+  };
+  discountPercentage?: number;
+  category?: string;
+  description?: string;
+  dimensions?: string;
+  material?: string;
+  sizes?: string[];
+}
+
+const fetchProductById = async (productId: string): Promise<Product | null> => {
+  const query = `*[_type == "product" && _id == $id][0] {
+    _id,
+    name,
+    price,
+    image {
+      asset -> {
+        _id,
+        url
+      }
+    },
+    discountPercentage,
+    category,
+    description
+  }`;
+
+  try {
+    const product = await client.fetch(query, { id: productId });
+    return product || null;
+  } catch (error) {
+    console.error("Error fetching product:", error);
+    return null;
+  }
+};
 
 const ProductDetail = () => {
-  const { id } = useParams();
-  {
-    /* extraction of product id by url */
-  }
-  const productId = id ? parseInt(id as string) : null;
-  {
-    /* conversion of id's number into string*/
-  }
-  const product = products.find((p) => p.id === productId);
-  {
-    /* finding product */
-  }
+  const params = useParams(); 
+  const productId = params?.id as string; 
+
+  const [product, setProduct] = useState<Product | null>(null);
+  const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
+  const [selectedMaterial, setSelectedMaterial] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (productId) {
+      const getProduct = async () => {
+        const fetchedProduct = await fetchProductById(productId);
+        setProduct(fetchedProduct);
+      };
+
+      getProduct();
+    } else {
+      console.error("Product ID not found in the URL");
+    }
+  }, [productId]);
+
+  const productDetails = {
+    dimensions: ["40 x 20 x 30 inches", "45 x 22 x 32 inches", "50 x 25 x 35 inches"],
+    material: ["Wood", "Metal", "Fabric", "Plastic"],
+    sizes: ["Small", "Medium", "Large"]
+  };
+
+  const handleDimensionChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDimension(event.target.value);
+  };
+
+  const handleMaterialChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedMaterial(event.target.value);
+  };
+
+  const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSize(event.target.value);
+  };
 
   if (!product) {
     return <div>Product not found</div>;
   }
 
   return (
-    <section>
+    <section className="bg-gray-50">
       <Header />
       <div
         className="w-full h-[316px] bg-cover bg-center"
-        style={{ backgroundImage: "url('/Rectangle 1.png')" }}
+        style={{
+          backgroundImage: "url('/Rectangle 1.png')",
+          backgroundColor: "#f4f0e1",
+        }}
       >
-        {/* top div */}
         <div className="flex items-center justify-center h-full">
           <div className="text-center p-6">
             <Image
               src="/Meubel House_Logos-05.png"
-              alt="Image"
+              alt="Logo"
               width={77}
               height={77}
               className="ml-4"
             />
-            <h1 className="font-poppins font-medium text-[48px] leading-[72px] text-[#000000] md:mb-4">
+            <h1 className="font-poppins font-medium text-[48px] leading-[72px] text-[#3e3e3e] md:mb-4">
               Shop
             </h1>
             <div className="flex justify-center items-center">
-              <p className="font-poppins font-medium text-[16px] leading-6 text-[#000000]">
+              <p className="font-poppins font-medium text-[16px] leading-6 text-[#3e3e3e]">
                 Home ...{" "}
               </p>
-              <p className="font-poppins font-light text-[16px] leading-6 text-[#000000] pl-2">
+              <p className="font-poppins font-light text-[16px] leading-6 text-[#3e3e3e] pl-2">
                 Shop
               </p>
             </div>
           </div>
         </div>
-
-        {/* 2nd div (Image section) */}
-        <div className="mt-4 hidden md:block">
-          <Image src="/Group 63.png" alt="Image" width={1440} height={500} />
-        </div>
       </div>
 
-      {/* for products detail */}
       <div className="w-full flex justify-center items-center mt-40">
         <div className="w-full md:w-[60%] flex flex-col md:flex-row items-center md:items-start">
           <img
-            src={product.image}
+            src={product.image.asset.url}
             alt={product.name}
-            className="object-contain"
+            className="object-contain rounded-[10px]"
             width={300}
             height={300}
           />
-          <div className="md:ml-20 mt-6 text-center md:text-left">
-            <h2 className="font-poppins font-semibold text-[24px] leading-9 text-[#000000]">
+          <div className="md:ml-20 text-center md:text-left">
+            <h2 className="font-poppins font-semibold text-[30px] leading-9 text-black">
               {product.name}
             </h2>
-            <p className="font-poppins font-normal text-[16px] leading-6 text-[#000000] mt-6">
+            <p className="font-poppins font-normal text-[16px] leading-6 text-[#555555] mt-6">
               {product.description}
             </p>
-            <p className="font-poppins font-medium text-[20px] text-[#000000] mt-4">
-              {product.price}
+            <p className="font-poppins font-medium text-[20px] text-[#412d23] mt-4">
+              Rs. {product.price}
             </p>
+
+            {/* Dropdown for Dimensions */}
+            <div className="mt-4">
+              <label className="font-poppins font-medium text-[16px] text-[#6e4b3b]">
+                Select Dimensions:
+              </label>
+              <select
+                className="ml-2 p-2 border border-gray-300 rounded"
+                value={selectedDimension || ""}
+                onChange={handleDimensionChange}
+              >
+                <option value="">Choose Dimension</option>
+                {productDetails.dimensions.map((dimension, index) => (
+                  <option key={index} value={dimension}>
+                    {dimension}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Dropdown for Material */}
+            <div className="mt-4">
+              <label className="font-poppins font-medium text-[16px] text-[#6e4b3b]">
+                Select Material:
+              </label>
+              <select
+                className="ml-2 p-2 border border-gray-300 rounded"
+                value={selectedMaterial || ""}
+                onChange={handleMaterialChange}
+              >
+                <option value="">Choose Material</option>
+                {productDetails.material.map((material, index) => (
+                  <option key={index} value={material}>
+                    {material}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Dropdown for Size */}
+            <div className="mt-4">
+              <label className="font-poppins font-medium text-[16px] text-[#6e4b3b]">
+                Select Size:
+              </label>
+              <select
+                className="ml-2 p-2 border border-gray-300 rounded"
+                value={selectedSize || ""}
+                onChange={handleSizeChange}
+              >
+                <option value="">Choose Size</option>
+                {productDetails.sizes.map((size, index) => (
+                  <option key={index} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             <button
               type="submit"
-              className="w-[237px] py-3 mt-4 border-[1px] border-[#000000] rounded-[15px] font-poppins font-normal text-[16px] leading-[24px]"
+              className="w-[237px] py-3 mt-4 bg-[#6e4b3b] text-white border-[1px] border-[#6e4b3b] rounded-[15px] font-poppins font-normal text-[16px] leading-[24px] hover:bg-[#8b5d42]"
             >
               Add to Cart
             </button>

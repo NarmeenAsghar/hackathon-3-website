@@ -90,7 +90,7 @@ function page() {
                     type="text"
                     name="remember me"
                     placeholder=""
-                    className="w-[30px] h-[27px] p-3 border-[1px] border-[#9f9f9f] rounded-[5px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                    className="w-[50px] h-[27px] p-3 border-[1px] border-[#9f9f9f] rounded-[5px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                     required
                   />
                 </div>

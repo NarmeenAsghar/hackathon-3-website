@@ -1,13 +1,48 @@
-import React from "react";
+"use client"
+import React, { useState } from "react";
 import Image from "next/image";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import { FaMapMarkerAlt, FaPhone, FaRegClock } from "react-icons/fa";
+import dynamic from "next/dynamic";
 
-function page() {
+// Dynamically import the components (if you have any that should be dynamic)
+const DynamicHeader = dynamic(() => import("@/components/Header"));
+const DynamicFooter = dynamic(() => import("@/components/Footer"));
+
+function ContactPage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
+
+  // Handle input change
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // Handle form submission
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
+    e.preventDefault();
+    // Store the form data in localStorage
+    localStorage.setItem("contactFormData", JSON.stringify(formData));
+    alert("Your details have been saved!");
+    // Optionally clear the form after submission
+    setFormData({
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    });
+  };
+
   return (
     <section className="flex flex-col min-h-screen justify-between items-center w-full">
-      <Header />
+      <DynamicHeader />
       <div
         className="w-full h-[316px] bg-cover bg-center"
         style={{ backgroundImage: "url('/Rectangle 1.png')" }}
@@ -95,7 +130,7 @@ function page() {
 
             {/* Contact Form */}
             <div className="md:w-[435px] mt-10 order-2">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                   <label
                     htmlFor="name"
@@ -107,6 +142,8 @@ function page() {
                     id="name"
                     type="text"
                     name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="Your Name"
                     className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                     required
@@ -124,6 +161,8 @@ function page() {
                     id="email"
                     type="email"
                     name="email"
+                    value={formData.email}
+                    onChange={handleChange}
                     placeholder="Your Email"
                     className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                     required
@@ -141,6 +180,8 @@ function page() {
                     id="subject"
                     type="text"
                     name="subject"
+                    value={formData.subject}
+                    onChange={handleChange}
                     placeholder="Subject"
                     className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                     required
@@ -157,6 +198,8 @@ function page() {
                   <textarea
                     id="message"
                     name="message"
+                    value={formData.message}
+                    onChange={handleChange}
                     placeholder="Your Message"
                     rows={3}
                     className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
@@ -183,7 +226,7 @@ function page() {
             Free Delivery
           </h1>
           <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">
-            For all oders over $50, consectetur adipim scing elit.
+            For all orders over $50, consectetur adipiscing elit.
           </p>
         </div>
 
@@ -192,7 +235,7 @@ function page() {
             90 Days Return
           </h1>
           <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">
-            If goods have problems, consectetur adipim scing elit.
+            If goods have problems, consectetur adipiscing elit.
           </p>
         </div>
 
@@ -201,14 +244,14 @@ function page() {
             Secure Payment
           </h1>
           <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">
-            100% secure payment, consectetur adipim scing elit.
+            100% secure payment, consectetur adipiscing elit.
           </p>
         </div>
       </div>
 
-      <Footer />
+      <DynamicFooter />
     </section>
   );
 }
 
-export default page;
+export default ContactPage;

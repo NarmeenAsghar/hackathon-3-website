@@ -33,7 +33,7 @@ function Header() {
           <Link href="/account"><div><FaUser size={20} color="#000000" /></div></Link>
         </div>
         <div className="flex items-center cursor-pointer">
-          <FaSearch size={20} color="#000000" />
+        <Link href="/searchbar"><div><FaSearch size={20} color="#000000" /></div></Link>
         </div>
         <div className="flex items-center cursor-pointer">
           <Link href="/wishlist"><div><FaHeart size={20} color="#000000" /></div></Link>
@@ -61,7 +61,7 @@ function Header() {
           <Link href="/account"><div><FaUser size={20} color="#000000" /></div></Link>
         </div>
         <div className="flex items-center cursor-pointer">
-          <FaSearch size={20} color="#000000" />
+        <Link href="/searchbar"><div><FaSearch size={20} color="#000000" /></div></Link>
         </div>
         <div className="flex items-center cursor-pointer">
           <Link href="/wishlist"><div><FaHeart size={20} color="#000000" /></div></Link>

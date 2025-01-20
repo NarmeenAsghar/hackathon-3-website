@@ -1,53 +1,109 @@
-import React from "react";
+"use client"
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { client } from "@/sanity/lib/client";
+import Link from "next/link";
 
-function Tables() {
+interface Product {
+  productTitle: string;
+  productImage: {
+    asset: {
+      url: string;
+    };
+  };
+  price: string;
+}
+
+interface ToppicksData {
+  title: string;
+  description: string;
+  products: Product[];
+  viewMoreText: string | null;
+}
+
+const productMargins = ["mt-0", "mt-6", "mt-0", "mt-10"];
+const productTitle = ["mt-2", "mt-9", "mt-0", "mt-5"];
+
+const query = async (): Promise<ToppicksData> => {
+  const res = await client.fetch(`
+    *[_type == "toppicks"][0] {
+      title,
+      description,
+      products[] {
+        productTitle,
+        productImage {
+          asset -> {
+            url
+          }
+        },
+        price
+      },
+      viewMoreText
+    }
+  `);
+  return res;
+};
+
+function Toppicks() {
+  const [data, setData] = useState<ToppicksData | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const fetchedData = await query();
+      setData(fetchedData);
+    };
+
+    fetchData();
+  }, []); 
+
+  if (!data) {
+    return <div>Loading...</div>;
+  }
+
   return (
-    <div className="w-full h-full md:h-[672px] flex flex-col sm:flex-row md:flex-row justify-center items-center mt-20 md:mt-0 overflow-hidden">
-      {/* content */}
-      <div className="w-full sm:w-[500px] md:w-[500px] h-[562px]">
-        {/* product 1 */}
-        <div className="relative flex flex-col justify-center items-center sm:p-10 ">
-          <Image
-            src="/Granite square side table 1.png"
-            alt="Product Image"
-            width={1092}
-            height={1641}
-            className="object-contain mr-16 sm:mr-24 md:mr-0"
-          />
-          <div className="flex flex-col md:items-start sm:items-center md:justify-start md:mr-40">
-            <h2 className="text-[30px] sm:text-[28px] md:text-[36px] font-poppins font-medium leading-[54px] text-[#000000]">
-              Side table
-            </h2>
-            <button className="md:mt-4 mb-10 md:mb-0 text-[18px] sm:text-[20px] md:text-[24px] font-poppins font-medium leading-9 text-[#000000] py-2 border-b-[0.5px] border-[#000000]">
-              View More
-            </button>
+    <div className="w-full flex flex-col justify-center items-center mt-10 mb-20 overflow-x-hidden">
+      {/* Main heading */}
+      <h1 className="font-poppins font-medium text-[36px] leading-[54px] text-[#000000] mb-4">
+        {data.title}
+      </h1>
+      <p className="font-poppins font-medium text-[16px] leading-6 text-[#9f9f9f] mb-6 px-8 text-center">
+        {data.description}
+      </p>
+
+      {/* Products section */}
+      <div className="w-full flex flex-wrap justify-center gap-4 md:gap-6 overflow-y-auto md:overflow-y-visible md:max-h-full max-h-[300px]">
+        {data.products.map((product: Product, index: number) => (
+          <div
+            key={index}
+            className={`w-full md:w-[250px] h-auto flex flex-col items-center md:items-start ${productMargins[index]}`}
+          >
+            <Image
+              src={product.productImage.asset.url}
+              alt={product.productTitle}
+              width={200}
+              height={200}
+              className="object-contain"
+            />
+            <h3
+              className={`font-poppins font-normal text-[16px] leading-6 text-[#000000] mt-2 ${productTitle[index]}`}
+            >
+              {product.productTitle}
+            </h3>
+            <p className="font-poppins font-medium text-[24px] leading-9 text-[#000000]">
+              {product.price}
+            </p>
           </div>
-        </div>
+        ))}
       </div>
 
-      {/* product 2 */}
-      <div className="w-full sm:w-[500px] md:w-[500px] h-[562px]">
-        <div className="relative flex flex-col justify-center items-center sm:p-10">
-          <Image
-            src="/Cloud sofa three seater + ottoman_3 1.png"
-            alt="Product Image"
-            width={1585}
-            height={1055}
-            className="object-contain mr-28 sm:mr-24 md:mr-0"
-          />
-          <div className="flex flex-col md:items-start sm:items-center md:justify-start md:mr-40 md:mt-5 mt-0 sm:mt-4">
-            <h2 className="text-[30px] sm:text-[28px] md:text-[36px] font-poppins font-medium leading-[54px] text-[#000000]">
-              Side table
-            </h2>
-            <button className="md:mt-4 text-[18px] sm:text-[20px] md:text-[24px] font-poppins font-medium leading-9 text-[#000000] py-2 border-b-[0.5px] border-[#000000]">
-              View More
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* View More Button */}
+      <Link href="/shop">
+        <button className="md:mt-14 mt-8 mb-10 md:mb-0 text-[20px] font-poppins font-medium leading-[30px] text-[#000000]">
+          {data.viewMoreText || "View More"}
+        </button>
+      </Link>
     </div>
   );
 }
 
-export default Tables;
+export default Toppicks;
