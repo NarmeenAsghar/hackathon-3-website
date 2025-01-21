@@ -1,10 +1,23 @@
-"use client"
+"use client";
 import { client } from "@/sanity/lib/client";
 import React, { useState, useEffect } from "react";
 
-export const query = async () => {
+// Define the structure of the fetched data
+interface InstagramData {
+  backgroundImage: {
+    asset: {
+      url: string;
+    };
+  } | null; // Allow backgroundImage to be null
+  heading: string;
+  description: string;
+  buttonText: string;
+}
+
+// Modify the query function to allow returning null if no data is found
+export const query = async (): Promise<InstagramData | null> => {
   const res = await client.fetch(`
-    *[_type == "instagram"][0] {
+    *[_type == "instagram"] {
       backgroundImage {
         asset -> {
           url
@@ -15,11 +28,12 @@ export const query = async () => {
       buttonText
     }
   `);
-  return res;
+  return res.length > 0 ? res[0] : null; // Return null if no data
 };
 
 function Instagram() {
-  const [data, setData] = useState<any>(null);
+  // Use the correct type for the state and allow it to be null
+  const [data, setData] = useState<InstagramData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,8 +44,14 @@ function Instagram() {
     fetchData();
   }, []); 
 
+  // Handle case where data is null or loading
   if (!data) {
-    return <div>Loading...</div>;
+    return <div>Loading...</div>; // Handle loading state
+  }
+
+  // If backgroundImage is missing, provide a fallback message
+  if (!data.backgroundImage || !data.backgroundImage.asset?.url) {
+    return <div>No background image available</div>; // Handle missing background image
   }
 
   return (

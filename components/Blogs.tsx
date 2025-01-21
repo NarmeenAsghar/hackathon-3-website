@@ -1,12 +1,32 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaRegClock, FaCalendarAlt } from "react-icons/fa";
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 
+// Define types for the fetched data
+interface Product {
+  image: {
+    asset: {
+      url: string;
+    };
+  };
+  title: string;
+  readMore: string;
+  readTime: string;
+  publishDate: string;
+}
 
-const query = async () => {
+interface Blog {
+  _id: string;
+  title: string;
+  description: string;
+  products: Product[];
+  viewAllPost: string;
+}
+
+const query = async (): Promise<Blog[]> => {
   const res = await client.fetch(`
     *[_type == "blog"]{
       _id,
@@ -31,8 +51,8 @@ const query = async () => {
 };
 
 function Blogs() {
-
-  const [data, setData] = useState<any>(null);
+  // Use the correct type for state
+  const [data, setData] = useState<Blog[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -43,7 +63,7 @@ function Blogs() {
     fetchData();
   }, []); 
 
-  if (!data) {
+  if (data.length === 0) {
     return <div>Loading...</div>;
   }
 
@@ -60,8 +80,8 @@ function Blogs() {
 
       {/* Products section */}
       <div className="flex w-full flex-wrap justify-center gap-6 mb-8 mt-8 overflow-y-auto md:overflow-y-visible">
-        {data.map((blog: any) =>
-          blog.products.map((product: any, index: number) => {
+        {data.map((blog) =>
+          blog.products.map((product, index) => {
             if (!product.image || !product.title) {
               console.log(
                 `Skipping product with index ${index} due to missing data.`

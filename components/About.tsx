@@ -1,10 +1,17 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { client } from "@/sanity/lib/client";
+
+// Define the type for the data
+interface AboutData {
+  heading: string;
+  description: string;
+  buttonText: string;
+}
 
 const query = async () => {
   const res = await client.fetch(`
@@ -18,7 +25,8 @@ const query = async () => {
 };
 
 function About() {
-  const [data, setData] = useState<any>(null);
+  // Use the defined type for the data state
+  const [data, setData] = useState<AboutData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -49,7 +57,7 @@ function About() {
               alt="Meubel House Logo"
               width={77}
               height={77}
-              className="ml-6"
+              className="ml-14"
             />
             <h1 className="font-poppins font-medium text-[48px] leading-[72px] text-[#000000] md:mb-4">
               About Us

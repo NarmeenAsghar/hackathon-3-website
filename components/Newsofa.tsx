@@ -1,12 +1,24 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 
-const query = async () => {
+// Define the structure of the fetched data
+interface SofaData {
+  title: string;
+  image: {
+    asset: {
+      url: string;
+    };
+  };
+  buttonText: string;
+}
+
+// Define the query function
+const query = async (): Promise<SofaData[]> => {
   const res = await client.fetch(`
-    *[_type == "newsofa"][0] {
+    *[_type == "newsofa"] {
       title,
       image {
         asset -> {
@@ -16,21 +28,25 @@ const query = async () => {
       buttonText
     }
   `);
-  return res;
+  return res; // Note that this returns an array of objects
 };
 
 function Newsofa() {
-
-  const [data, setData] = useState<any>(null);
+  // Use the correct type for the state
+  const [data, setData] = useState<SofaData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const sofaData = await query();
-      setData(sofaData);
+
+      // Make sure to pick the first item if the result is an array
+      if (sofaData.length > 0) {
+        setData(sofaData[0]); // Select the first object in the array
+      }
     };
 
     fetchData();
-  }, []); 
+  }, []);
 
   if (!data) {
     return <div>Loading...</div>;

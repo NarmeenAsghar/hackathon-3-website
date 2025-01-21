@@ -1,9 +1,74 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Link from "next/link";
 
-function page() {
+interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image: {
+    asset: {
+      url: string;
+    };
+  };
+  quantity: number;
+}
+
+export default function CheckoutPage() {
+  const [cart, setCart] = useState<Product[]>([]);
+  const [userDetails, setUserDetails] = useState({
+    firstName: "",
+    lastName: "",
+    companyName: "",
+    phone: "",
+    email: "",
+    country: "",
+    streetAddress: "",
+    townCity: "",
+    province: "",
+    zipCode: "",
+    paymentMethod: "",
+  });
+  const [isOrderPlaced, setIsOrderPlaced] = useState(false);
+  const [orderTracking, setOrderTracking] = useState({
+    status: "Pending",
+    estimatedDeliveryDate: "",
+  });
+
+  useEffect(() => {
+    const savedCart = JSON.parse(localStorage.getItem("cart") || "[]").map(
+      (product: Product) => ({
+        ...product,
+        quantity: product.quantity || 1,
+      })
+    );
+    setCart(savedCart);
+  }, []);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setUserDetails((prevDetails) => ({
+      ...prevDetails,
+      [name]: value,
+    }));
+  };
+
+  const handlePlaceOrder = () => {
+    setIsOrderPlaced(true);
+    setOrderTracking({
+      status: "Shipped",
+      estimatedDeliveryDate: "2025-02-05", // Example date, you can calculate dynamically
+    });
+
+    localStorage.setItem("cart", JSON.stringify([]));
+    setCart([]);
+  };
+
   return (
     <section className="flex flex-col min-h-screen justify-between items-center w-full overflow-hidden">
       <Header />
@@ -11,12 +76,11 @@ function page() {
         className="w-full h-[316px] bg-cover bg-center"
         style={{ backgroundImage: "url('/Rectangle 1.png')" }}
       >
-        {/* top div */}
         <div className="flex items-center justify-center h-full">
           <div className="text-center p-6">
             <Image
               src="/Meubel House_Logos-05.png"
-              alt="Image"
+              alt="Logo"
               width={77}
               height={77}
               className="ml-20"
@@ -36,52 +100,162 @@ function page() {
         </div>
       </div>
 
-      {/* form section */}
-      <div className="min-h-screen flex justify-center items-center md:mt-20 px-20">
+      <div className="min-h-screen flex justify-center items-center md:mt-20">
         <div className="w-full max-w-[1440px]">
           <h1 className="text-center font-poppins font-bold text-[36px] leading-[54px] text-[#000000]">
             Get In Touch With Us
           </h1>
-          <p className="text-center font-poppins font-normal text-[16px] leading-6 text-[#9f9f9f] mt-4 mb-8">
+          <p className="text-center font-poppins font-normal text-[16px] leading-6 text-[#9f9f9f] mt-4 mb-8 px-6 md:px-0">
             For More Information About Our Product & Services. Please Feel Free
             To Drop Us <br /> An Email. Our Staff Always Be There To Help You
             Out. Do Not Hesitate!
           </p>
 
-          <div className="flex flex-col md:flex-row justify-center gap-8 w-full md:h-full">
-            {/* billing details */}
-            <div className="md:w-[435px] w-[270px] mt-10 order-1">
+          <div className="flex flex-col md:flex-row justify-center gap-20 w-full md:h-full">
+            {/* User Information Form */}
+            <div className="w-full mt-10 order-1 px-10 md:px-0">
               <form>
-                <div className="mb-4 flex flex-col md:flex-row gap-8">
-                  <div>
+                <div className="mb-4 flex flex-col md:flex-row gap-4 md:gap-8">
+                  <div className="flex flex-col w-full">
                     <label
-                      htmlFor="first name"
+                      htmlFor="firstName"
                       className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
                     >
                       First Name
                     </label>
                     <input
-                      id="first name"
+                      id="firstName"
                       type="text"
-                      name="first name"
-                      placeholder=""
-                      className="w-[200px] p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                      name="firstName"
+                      value={userDetails.firstName}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                       required
                     />
                   </div>
-                  <div>
+                  <div className="flex flex-col w-full">
                     <label
-                      htmlFor="last name"
+                      htmlFor="lastName"
                       className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
                     >
                       Last Name
                     </label>
                     <input
-                      id="last name"
+                      id="lastName"
                       type="text"
-                      name="last name"
-                      placeholder=""
-                      className="w-[200px] p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                      name="lastName"
+                      value={userDetails.lastName}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Other Input Fields */}
+                <div className="mb-4">
+                  <label
+                    htmlFor="companyName"
+                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                  >
+                    Company Name (Optional)
+                  </label>
+                  <input
+                    id="companyName"
+                    type="text"
+                    name="companyName"
+                    value={userDetails.companyName}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="phone"
+                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                  >
+                    Phone Number
+                  </label>
+                  <input
+                    id="phone"
+                    type="text"
+                    name="phone"
+                    value={userDetails.phone}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="email"
+                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                  >
+                    Email Address
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={userDetails.email}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label
+                    htmlFor="streetAddress"
+                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                  >
+                    Street Address
+                  </label>
+                  <input
+                    id="streetAddress"
+                    type="text"
+                    name="streetAddress"
+                    value={userDetails.streetAddress}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4 flex flex-col md:flex-row gap-4 md:gap-8">
+                  <div className="flex flex-col w-full">
+                    <label
+                      htmlFor="townCity"
+                      className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                    >
+                      Town/City
+                    </label>
+                    <input
+                      id="townCity"
+                      type="text"
+                      name="townCity"
+                      value={userDetails.townCity}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col w-full">
+                    <label
+                      htmlFor="province"
+                      className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                    >
+                      Province
+                    </label>
+                    <input
+                      id="province"
+                      type="text"
+                      name="province"
+                      value={userDetails.province}
+                      onChange={handleInputChange}
+                      className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                       required
                     />
                   </div>
@@ -89,273 +263,123 @@ function page() {
 
                 <div className="mb-4">
                   <label
-                    htmlFor="company name"
+                    htmlFor="zipCode"
                     className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
                   >
-                    Company Name (Optional)
+                    Zip Code
                   </label>
                   <input
-                    id="company name"
-                    type="company name"
-                    name="company name"
-                    placeholder=""
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="region"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
-                  >
-                    Country / Region
-                  </label>
-                  <input
-                    id="region"
+                    id="zipCode"
                     type="text"
-                    name="region"
-                    placeholder="Srilanka"
+                    name="zipCode"
+                    value={userDetails.zipCode}
+                    onChange={handleInputChange}
                     className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                     required
                   />
                 </div>
 
+                {/* Payment Method */}
                 <div className="mb-4">
                   <label
-                    htmlFor="region"
+                    htmlFor="paymentMethod"
                     className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
                   >
-                    Country / Region
+                    Payment Method
                   </label>
-                  <input
-                    id="region"
-                    type="text"
-                    name="region"
-                    placeholder="Srilanka"
+                  <select
+                    id="paymentMethod"
+                    name="paymentMethod"
+                    value={userDetails.paymentMethod}
+                    onChange={handleInputChange}
                     className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
                     required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="Street address"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
                   >
-                    Street address
-                  </label>
-                  <input
-                    id="Street address"
-                    type="text"
-                    name="Street address"
-                    placeholder=""
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
+                    <option value="">Select Payment Method</option>
+                    <option value="creditCard">Credit Card</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="bankTransfer">Bank Transfer</option>
+                  </select>
                 </div>
 
-                <div className="mb-4">
-                  <label
-                    htmlFor="Town / City"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
+                <div className="mb-4 text-center">
+                  <button
+                    type="button"
+                    className="w-full bg-[#a57159] text-white py-2 rounded-md shadow-lg"
+                    onClick={handlePlaceOrder}
                   >
-                    Town / City
-                  </label>
-                  <input
-                    id="Town / City"
-                    type="text"
-                    name="Town / City"
-                    placeholder=""
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="Province"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
-                  >
-                    Province
-                  </label>
-                  <input
-                    id="Province"
-                    type="text"
-                    name="Province"
-                    placeholder="Western Province"
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="ZIP code"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
-                  >
-                    ZIP code
-                  </label>
-                  <input
-                    id="ZIP code"
-                    type="text"
-                    name="ZIP code"
-                    placeholder=""
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="Phone"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
-                  >
-                    Phone
-                  </label>
-                  <input
-                    id="Phone"
-                    type="number"
-                    name="Phone"
-                    placeholder=""
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="Email address"
-                    className="block font-poppins font-medium text-[16px] leading-6 text-[#000000] pb-4"
-                  >
-                    Email address
-                  </label>
-                  <input
-                    id="Email address"
-                    type="email"
-                    name="Email address"
-                    placeholder=""
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <input
-                    id="Additional information"
-                    type="text"
-                    name="Additional information"
-                    placeholder="Additional information"
-                    className="w-full p-3 border-[1px] border-[#9f9f9f] rounded-[10px] text-[#9f9f9f] font-poppins font-medium text-[16px] leading-6"
-                    required
-                  />
+                    Place Order
+                  </button>
                 </div>
               </form>
             </div>
 
-            {/* detail section */}
-            <div className="container mx-auto p-6 order-2 mb-5">
-              {/* First Section (Product and Subtotal) */}
-              <div className="flex justify-between mb-6">
-                <div className="w-1/2 flex flex-col gap-4">
-                  <h2 className="font-poppins font-medium text-[16px] md:text-[24px] leading-9 text-[#000000">
-                    Product Name
-                  </h2>
-                  <h3 className="font-poppins font-normal text-[16px] leading-6 text-[#9f9f9f]">
-                    Asgaard sofa
-                  </h3>
-                  <h3 className="font-poppins font-normal text-[16px] leading-6 text-[#000000]">
-                    Subtotal
-                  </h3>
-                  <h3 className="font-poppins font-normal text-[16px] leading-6 text-[#000000]">
-                    Total
-                  </h3>
-                </div>
-                <div className="w-1/2 gap-4 flex flex-col text-right">
-                  <h2 className="font-poppins font-medium text-[16px] md:text-[24px] leading-9 text-[#000000">
-                    Subtotal
-                  </h2>
-                  <h3 className="font-poppins font-light text-[16px] leading-6 text-[#000000]">
-                    Rs. 250,000.00
-                  </h3>
-                  <h3 className="font-poppins font-light text-[16px] leading-6 text-[#000000]">
-                    Rs. 250,000.00
-                  </h3>
-                  <h3 className="font-poppins font-bold text-[16px] md:text-[24px] leading-9 text-[#b88e2f]">
-                    Rs. 250,000.00
-                  </h3>
-                </div>
-              </div>
+            {/* Cart Section */}
+            <div className="w-full p-6 mb-5 pt-8">
+              <h2 className="text-center font-poppins font-bold text-[24px] mb-6">
+                Your Cart
+              </h2>
 
-              {/* Second Section (Heading, Paragraph, Subheadings, Button) */}
-              <div className="py-6 border-t-[0.5px] border-[#d9d9d9] ">
-                <div className="flex flex-row items-start gap-4">
-                  <button className="rounded-full w-3 h-3 bg-[#000000] mt-3"></button>
-                  <h3 className="font-poppins font-normal text-[16px] leading-6 text-[#000000] mb-4 mt-1">
-                    Direct Bank Transfer
-                  </h3>
+              {/* Empty Cart Message */}
+              {cart.length === 0 ? (
+                <div className="flex flex-col justify-center items-center text-center">
+                  <Image
+                    src="/empty-cart-icon.png"
+                    alt="Empty Cart"
+                    width={120}
+                    height={120}
+                  />
+                  <p className="font-poppins text-[20px] font-bold text-[#9f9f9f] mt-4">
+                    Your cart is empty
+                  </p>
+                  <p className="font-poppins text-[16px] text-[#9f9f9f] mt-2">
+                    It looks like you have not added anything to your cart yet.
+                  </p>
+                  <Link href="/shop">
+                  <button className="mt-4 bg-[#a57159] text-white py-2 px-6 rounded-md">
+                    Start Shopping
+                  </button>
+                  </Link>
                 </div>
-                <p className="font-poppins font-light text-[16px] leading-6 text-[#9f9f9f] mb-4">
-                  Make your payment directly into our bank account. Please use
-                  your Order ID as the payment reference. Your order will not be
-                  shipped until the funds have cleared in our account.
-                </p>
-                <div className="flex flex-row items-start gap-4">
-                  <button className="rounded-full w-3 h-3 border border-[#9f9f9f] mt-3"></button>
-                  <h3 className="font-poppins font-medium text-[16px] leading-6 text-[#9f9f9f] mb-4 mt-1">
-                    Direct Bank Transfer
-                  </h3>
+              ) : (
+                <div>
+                  {cart.map((product) => (
+                    <div
+                      key={product.id}
+                      className="flex justify-between items-center mb-6 p-4 border border-[#e0e0e0] rounded-lg shadow-md"
+                    >
+                      <div className="flex items-center gap-4">
+                        <Image
+                          src={product.image.asset.url}
+                          alt={product.name}
+                          width={80}
+                          height={80}
+                          className="object-cover"
+                        />
+                        <div>
+                          <p className="font-poppins text-[16px] font-semibold text-[#000000]">{product.name}</p>
+                          <p className="font-poppins text-[14px] text-[#9f9f9f]">Qty: {product.quantity}</p>
+                        </div>
+                      </div>
+                      <p className="font-poppins text-[16px] font-semibold text-[#000000]">{product.price}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="flex flex-row items-start gap-4">
-                  <button className="rounded-full w-3 h-3 border border-[#9f9f9f] mt-3"></button>
-                  <h3 className="font-poppins font-medium text-[16px] leading-6 text-[#9f9f9f] mb-4 mt-1">
-                    Cash on Delivery
-                  </h3>
-                </div>
-                <p className="font-poppins font-semibold text-[16px] leading-6 text-[#000000] mb-4">
-                  Make your payment directly into our bank account. Please use
-                  your Order ID as the payment reference. Your order will not be
-                  shipped until the funds have cleared in our account.
-                </p>
-                <button
-                  type="submit"
-                  className="w-[237px] py-3 md:mt-6 border-[1px] border-[#000000] rounded-[15px] font-poppins font-normal text-[20px] leading-[30px]"
-                >
-                  Place order
-                </button>
-              </div>
+              )}
             </div>
+
+            {/* Order Tracking */}
+            {isOrderPlaced && (
+              <div className="mt-10 text-center">
+                <h3 className="font-poppins font-bold text-[20px]">
+                  Order Status: {orderTracking.status}
+                </h3>
+                <p className="font-poppins font-normal text-[16px] text-[#9f9f9f]">
+                  Estimated Delivery: {orderTracking.estimatedDeliveryDate}
+                </p>
+              </div>
+            )}
           </div>
-        </div>
-      </div>
-
-      {/* delivery section */}
-      <div className="flex flex-col md:flex-row justify-around items-center mt-10 pt-12 mb-6 w-full px-4 bg-[#faf4f4] h-full md:h-[300px]">
-        <div className="w-[300px] md:w-[376px] h-[108px] text-center md:text-left mb-10 md:mb-0">
-          <h1 className="font-poppins font-medium text-[32px] leading-48px] text-[#000000] mb-4">
-            Free Delivery
-          </h1>
-          <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">
-            For all oders over $50, consectetur adipim scing elit.
-          </p>
-        </div>
-
-        <div className="w-[300px] md:w-[376px] h-[108px] text-center md:text-left mb-10 md:mb-0">
-          <h1 className="font-poppins font-medium text-[32px] leading-48px] text-[#000000] mb-4">
-            90 Days Return
-          </h1>
-          <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">
-            If goods have problems, consectetur adipim scing elit.
-          </p>
-        </div>
-
-        <div className="w-[300px] md:w-[376px] h-[108px] text-center md:text-left mb-10 md:mb-0">
-          <h1 className="font-poppins font-medium text-[32px] leading-48px] text-[#000000] mb-4">
-            Secure Payment
-          </h1>
-          <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">
-            100% secure payment, consectetur adipim scing elit.
-          </p>
         </div>
       </div>
 
@@ -363,5 +387,3 @@ function page() {
     </section>
   );
 }
-
-export default page;

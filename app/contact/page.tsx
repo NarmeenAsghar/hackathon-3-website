@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import { FaMapMarkerAlt, FaPhone, FaRegClock } from "react-icons/fa";
@@ -17,7 +17,9 @@ function ContactPage() {
   });
 
   // Handle input change
-  const handleChange = (e: { target: { name: any; value: any; }; }) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -26,7 +28,7 @@ function ContactPage() {
   };
 
   // Handle form submission
-  const handleSubmit = (e: { preventDefault: () => void; }) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Store the form data in localStorage
     localStorage.setItem("contactFormData", JSON.stringify(formData));

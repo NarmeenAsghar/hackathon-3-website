@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useParams } from "next/navigation"; 
-import dynamic from "next/dynamic"; 
+import { useParams } from "next/navigation";
+import dynamic from "next/dynamic";
 import { client } from "@/sanity/lib/client";
 
 const Header = dynamic(() => import("@/components/Header"));
@@ -50,9 +50,9 @@ const fetchProductById = async (productId: string): Promise<Product | null> => {
   }
 };
 
-const ProductDetail = () => {
-  const params = useParams(); 
-  const productId = params?.id as string; 
+const Page = () => {  // Changed `page` to `Page`
+  const params = useParams();
+  const productId = params?.id as string;
 
   const [product, setProduct] = useState<Product | null>(null);
   const [selectedDimension, setSelectedDimension] = useState<string | null>(null);
@@ -71,6 +71,17 @@ const ProductDetail = () => {
       console.error("Product ID not found in the URL");
     }
   }, [productId]);
+
+  const addToCart = (product: Product) => {
+    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const productIndex = cart.findIndex((item: Product) => item._id === product._id);
+    if (productIndex === -1) {
+      cart.push({ ...product, quantity: 1 });
+    } else {
+      cart[productIndex].quantity += 1;
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+  };
 
   const productDetails = {
     dimensions: ["40 x 20 x 30 inches", "45 x 22 x 32 inches", "50 x 25 x 35 inches"],
@@ -130,7 +141,7 @@ const ProductDetail = () => {
 
       <div className="w-full flex justify-center items-center mt-40">
         <div className="w-full md:w-[60%] flex flex-col md:flex-row items-center md:items-start">
-          <img
+          <Image
             src={product.image.asset.url}
             alt={product.name}
             className="object-contain rounded-[10px]"
@@ -206,7 +217,7 @@ const ProductDetail = () => {
             </div>
 
             <button
-              type="submit"
+              onClick={() => addToCart(product)}
               className="w-[237px] py-3 mt-4 bg-[#6e4b3b] text-white border-[1px] border-[#6e4b3b] rounded-[15px] font-poppins font-normal text-[16px] leading-[24px] hover:bg-[#8b5d42]"
             >
               Add to Cart
@@ -220,4 +231,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default Page;  // Export the `Page` component

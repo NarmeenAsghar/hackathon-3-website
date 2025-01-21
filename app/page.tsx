@@ -3,15 +3,13 @@ import Footer from "@/components/Footer";
 import Hero from "@/components/Hero";
 import Instagram from "@/components/Instagram";
 import Newsofa from "@/components/Newsofa";
-import Tables from "@/components/Tables";
 import Toppicks from "@/components/Toppicks";
 import React from "react";
 
 export default function Home() {
   return (
-    <div className=""> 
+    <div> 
     <Hero />
-    <Tables />
     <Toppicks />
     <Newsofa />
     <Blogs />
@@ -20,3 +18,5 @@ export default function Home() {
     </div>
   );
 }
+
+
