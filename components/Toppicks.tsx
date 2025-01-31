@@ -57,7 +57,7 @@ function Toppicks() {
   }, []); 
   
   if (!data) {
-    return <div>Loading...</div>;
+    return <div className="w-full h-full flex justify-center items-center"></div>;
   }
 
   return (
@@ -98,8 +98,8 @@ function Toppicks() {
 
       {/* View More Button */}
       <Link href="/shop">
-        <button className="md:mt-14 mt-8 mb-10 md:mb-0 text-[20px] font-poppins font-medium leading-[30px] text-[#000000]">
-          {data.viewMoreText || "View More"}
+        <button className="md:mt-14 mt-8 mb-10 md:mb-0 bg-gradient-to-r from-teal-600 to-gray-700 text-white font-poppins font-semibold text-xl py-3 px-8 rounded-lg">
+          {data.viewMoreText}
         </button>
       </Link>
     </div>
