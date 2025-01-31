@@ -44,14 +44,12 @@ function Instagram() {
     fetchData();
   }, []); 
 
-  // Handle case where data is null or loading
   if (!data) {
-    return <div>Loading...</div>; // Handle loading state
+    return <div className="w-full h-full flex justify-center items-center"></div>;
   }
 
-  // If backgroundImage is missing, provide a fallback message
   if (!data.backgroundImage || !data.backgroundImage.asset?.url) {
-    return <div>No background image available</div>; // Handle missing background image
+    return <div>No background image available</div>; 
   }
 
   return (
@@ -62,7 +60,7 @@ function Instagram() {
       {/* Center Section */}
       <div className="flex items-center justify-center h-full">
         <div className="text-center p-6">
-          <h1 className="font-poppins font-bold text-[45px] md:text-[60px] leading-[90px] text-[#000000] md:mb-4">
+          <h1 className="font-poppins font-bold text-[45px] md:text-[60px] leading-[90px] text-[#000000] md:mb-4 bg-gradient-to-r from-teal-600 to-gray-700 text-transparent bg-clip-text">
             {data.heading}
           </h1>
           <p className="font-poppins font-normal text-[16px] md:text-[20px] leading-[30px] text-[#000000] mb-6">
