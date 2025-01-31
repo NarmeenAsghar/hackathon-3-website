@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
+import Link from "next/link";
 
-// Define the structure of the fetched data
 interface SofaData {
   title: string;
   image: {
@@ -15,7 +15,6 @@ interface SofaData {
   buttonText: string;
 }
 
-// Define the query function
 const query = async (): Promise<SofaData[]> => {
   const res = await client.fetch(`
     *[_type == "newsofa"] {
@@ -28,20 +27,18 @@ const query = async (): Promise<SofaData[]> => {
       buttonText
     }
   `);
-  return res; // Note that this returns an array of objects
+  return res; 
 };
 
 function Newsofa() {
-  // Use the correct type for the state
   const [data, setData] = useState<SofaData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       const sofaData = await query();
 
-      // Make sure to pick the first item if the result is an array
       if (sofaData.length > 0) {
-        setData(sofaData[0]); // Select the first object in the array
+        setData(sofaData[0]); 
       }
     };
 
@@ -49,7 +46,7 @@ function Newsofa() {
   }, []);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <div className="w-full h-full flex justify-center items-center"></div>;
   }
 
   return (
@@ -73,9 +70,11 @@ function Newsofa() {
           <h1 className="font-poppins font-bold text-[35px] md:text-[48px] leading-[72px] text-[#000000] pb-6 md:pb-8">
             {data.title}
           </h1>
-          <button className="font-poppins font-normal text-[20px] leading-[30px] text-[#000000] border-[1px] border-[#000000] rounded-[4px] w-[200px] h-[60px] md:w-[255px] md:h-[64px]">
+          <Link href="/shop">
+          <button className="bg-gradient-to-r from-teal-600 to-gray-700 text-white font-poppins font-semibold text-xl py-3 px-8 rounded-lg w-[200px] h-[60px] md:w-[255px] md:h-[64px]">
             {data.buttonText}
           </button>
+          </Link>
         </div>
       </div>
     </section>
