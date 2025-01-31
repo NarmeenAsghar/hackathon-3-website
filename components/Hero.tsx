@@ -1,14 +1,15 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Header from "./Header";
 import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
-import Link from "next/link"; 
+import Link from "next/link";
 
 interface HeroData {
   title: string;
   description: string;
+  Button: string;
   image: {
     asset: {
       url: string;
@@ -23,6 +24,7 @@ const query = async (): Promise<HeroData> => {
     *[_type == "hero"][0]{
       title,
       description,
+      Button,
       image{
         asset->{
           _id,
@@ -37,44 +39,51 @@ const query = async (): Promise<HeroData> => {
 };
 
 function Hero() {
-  const [data, setData] = useState<HeroData | null>(null); 
+  const [data, setData] = useState<HeroData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedData = await query(); 
-      setData(fetchedData); 
+      const fetchedData = await query();
+      setData(fetchedData);
     };
 
-    fetchData(); 
+    fetchData();
   }, []);
 
   if (!data) {
-    return <div>Loading...</div>; 
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
-    <section className="overflow-hidden bg-[#fbebb5]">
+    <section className="overflow-hidden">
       <Header />
-      <div className="w-full max-w-[1440px] max-h-[900px] flex flex-col md:flex-row justify-center md:justify-around items-center bg-[#fbebb5] mt-0 sm:mt-10 md:mt-0">
-        {/* for heading and button */}
-        <div className="md:w-[440px] md:h-[192px] mt-10 sm:mt-28 md:mt-0 md:ml-40 sm:mr-32 sm:ml-4 md:mr-0">
-          <h1 className="font-poppins font-medium text-[35px] md:text-[64px] leading-[96px] text-[#000000] mb-0 md:mb-10">
-            {data.title}
+      <div className="w-full max-w-[1440px] mx-auto px-4 flex flex-col md:flex-row justify-center gap-12 items-center mt-10">
+        {/* Text and Button Section */}
+        <div className="flex flex-col md:w-[45%] items-center md:items-start text-center md:text-left md:ml-28">
+          <h1 className="font-poppins font-semibold text-4xl md:text-5xl leading-tight mb-4 sm:mb-6 md:mb-8 bg-gradient-to-r from-teal-600 to-gray-700 text-transparent bg-clip-text">
+            <i>{data.title}</i>
           </h1>
+          <p className="text-lg md:text-xl text-[#555555] mb-6 md:mb-8">
+            {data.description}
+          </p>
           <Link href="/shop">
-            <button className="font-poppins font-medium text-[24px] leading-9 text-[#000000]">
-              {data.description}
+            <button className="bg-gradient-to-r from-teal-600 to-gray-700 text-white font-poppins font-semibold text-xl py-3 px-8 rounded-lg">
+              {data.Button}
             </button>
           </Link>
         </div>
 
-        {/* for image */}
-        <div className="md:mt-0">
+        {/* Image Section */}
+        <div className="md:w-[45%] mt-8 md:mt-0">
           <Image
             src={urlFor(data.image).url()}
             alt={data.imageAlt}
-            width={853}
-            height={1000}
+            width={500}
+            height={500}
           />
         </div>
       </div>
