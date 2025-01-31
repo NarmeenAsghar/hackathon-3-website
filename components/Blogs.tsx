@@ -5,7 +5,6 @@ import { FaRegClock, FaCalendarAlt } from "react-icons/fa";
 import Link from "next/link";
 import { client } from "@/sanity/lib/client";
 
-// Define types for the fetched data
 interface Product {
   image: {
     asset: {
@@ -51,7 +50,6 @@ const query = async (): Promise<Blog[]> => {
 };
 
 function Blogs() {
-  // Use the correct type for state
   const [data, setData] = useState<Blog[]>([]);
 
   useEffect(() => {
@@ -62,10 +60,6 @@ function Blogs() {
 
     fetchData();
   }, []); 
-
-  if (data.length === 0) {
-    return <div>Loading...</div>;
-  }
 
   return (
     <div className="w-full flex flex-col items-center py-8">
@@ -126,8 +120,8 @@ function Blogs() {
       </div>
 
       {/* Button to view all posts */}
-      <button className="md:mt-8 mb-10 md:mb-0 text-[20px] font-poppins font-medium leading-[30px] text-[#000000] py-2 border-b-[0.5px] border-[#000000]">
-        <Link href="/blog">View All Post</Link>
+      <button className="md:mt-8 mb-10 md:mb-0 bg-gradient-to-r from-teal-600 to-gray-700 text-white font-poppins font-semibold text-xl py-3 px-8 rounded-lg">
+        <Link href="/blog">View All Posts</Link>
       </button>
     </div>
   );
