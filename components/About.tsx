@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { client } from "@/sanity/lib/client";
 
-// Define the type for the data
 interface AboutData {
   heading: string;
   description: string;
@@ -38,7 +37,7 @@ function About() {
   }, []);
 
   if (!data) {
-    return <div>Loading...</div>;
+    return <div className="w-full h-full flex justify-center items-center"></div>;
   }
 
   return (
@@ -86,7 +85,7 @@ function About() {
         </div>
         <div className="flex justify-center items-center mt-8">
           <Link href="/shop">
-            <button className="px-8 py-3 border-[1px] border-[#000000] rounded-[15px] font-poppins font-normal text-[16px] md:text-[20px] leading-[30px]">
+            <button className="bg-gradient-to-r from-teal-600 to-gray-700 text-white font-poppins font-semibold text-xl py-3 px-8 rounded-lg">
               {data.buttonText}
             </button>
           </Link>
