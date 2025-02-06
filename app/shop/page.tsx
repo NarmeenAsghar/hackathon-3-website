@@ -13,7 +13,7 @@ function page() {
       <Header />
       <div className="w-full h-[316px] bg-cover bg-center" style={{ backgroundImage: "url('/Rectangle 1.png')" }}>
         {/* top div */}
-        <div className="flex items-center justify-center h-full">
+        
           <div className="text-center p-6">
             <Image src="/Meubel House_Logos-05.png" alt="Image" width={77} height={77} className="ml-4" />
             <h1 className="font-poppins font-medium text-[48px] leading-[72px] text-[#000000] md:mb-4">Shop</h1>
@@ -24,25 +24,11 @@ function page() {
           </div>
         </div>
 
-        {/* 2nd div (Image section) */}
-        <div className="mt-4 hidden md:block">
-          <Image src="/Group 63.png" alt="Image" width={1440} height={500} />
-        </div>
-      </div>
-
       {/* Products Section */}
       <Shopproducts />
 
-      {/* Next Page Button Section */}
-      <div className="hidden md:flex flex-col md:flex-row justify-center items-center gap-4 mt-10 mb-6">
-        <button className="bg-[#fbebb5] w-[60px] h-[60px] rounded-[4px] font-poppins font-normal text-[20px] leading-[30px] text-[#000000]">1</button>
-        <button className="bg-[#fff9e5] w-[60px] h-[60px] rounded-[4px] font-poppins font-normal text-[20px] leading-[30px] text-[#000000]">2</button>
-        <button className="bg-[#fff9e5] w-[60px] h-[60px] rounded-[4px] font-poppins font-normal text-[20px] leading-[30px] text-[#000000]">3</button>
-        <button className="bg-[#fff9e5] w-[60px] h-[60px] rounded-[4px] font-poppins font-normal text-[20px] leading-[30px] text-[#000000]">Next</button>
-      </div>
-
       {/* Delivery section */}
-      <div className="flex flex-col md:flex-row justify-around items-center mt-10 pt-12 mb-6 w-full px-4 bg-[#faf4f4] h-full md:h-[300px]">
+      <div className="flex flex-col md:flex-row justify-around items-center mt-10 pt-6 mb-6 w-full px-4 bg-[#faf4f4] h-full md:h-[300px]">
         <div className="w-[300px] md:w-[376px] h-[108px] text-center md:text-left mb-10 md:mb-0">
           <h1 className="font-poppins font-medium text-[32px] leading-48px] text-[#000000] mb-4">Free Delivery</h1>
           <p className="font-poppins font-normal text-[20px] leading-[30px] txet-[#9f9f9f]">For all oders over $50, consectetur adipim scing elit.</p>
